@@ -1,0 +1,15 @@
+apiVersion: v1                # Use the core API group for Services
+kind: Service                 # This object is a Service (network endpoint)
+metadata:
+  name: sensor-api            # Name of the Service
+  namespace: sensor-app       # Namespace (must match the Deployment's namespace)
+spec:
+  type: NodePort              # Exposes the Service on a static port on each Node (for local/dev)
+  selector:                   # How this Service finds the Pods to send traffic to
+    app: sensor-api           # Must match the Pod labels in the Deployment (template.metadata.labels)
+  ports:
+    - port: 8000              # The port the Service will listen on inside the cluster
+      targetPort: 8000        # The port on the Pod's container that receives the traffic
+      nodePort: 30080         # The fixed port on the Minikube Node to access from your machine
+                              # e.g. http://<minikube-ip>:30080
+

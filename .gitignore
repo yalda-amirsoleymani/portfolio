@@ -1,0 +1,35 @@
+# Virtual environment
+.venv/
+.env/
+.env
+*.env
+
+# Docker files
+*.log
+*.pid
+*.bak
+*.swp
+*.tmp
+
+# Pytest cache
+.pytest_cache/
+
+
+# DB and volumes
+*.db
+docker-volume/
+
+# Secrets
+config/*.secret.json
+
+# Terraform
+terraform/terraform.tfvars
+terraform/.terraform/
+*.tfvars
+*.tfstate
+*.tfstate.backup
+
+# Kubernetes Secrets
+k8s/db/postgres-secret.yaml
+k8s/db/dump.sql
+*secret*.yaml

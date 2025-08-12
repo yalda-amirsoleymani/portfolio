@@ -1,0 +1,28 @@
+# k8s/simulator-deployment.yaml
+
+apiVersion: apps/v1                # Use Kubernetes API version for Deployments
+kind: Deployment                   # This object is a Deployment (manages Pods)
+metadata:
+  name: sensor-simulator            # Name of this Deployment
+  namespace: sensor-app             # Runs in the same namespace as your API & DB
+spec:
+  replicas: 1                       # Only 1 Pod (copy) of the simulator runs
+  selector:                         # How the Deployment identifies the Pods it manages
+    matchLabels:
+      app: sensor-simulator         # Will match Pods with label app=sensor-simulator
+  template:                         # Pod template — defines what each Pod will look like
+    metadata:
+      labels:
+        app: sensor-simulator       # This Pod will have label app=sensor-simulator (must match selector)
+    spec:
+      containers:                   # List of containers in this Pod
+        - name: sensor-simulator    # Name of the container
+          image: portfolio-simulator:v1  # Docker image for the simulator app
+          imagePullPolicy: Never
+          env:                      # Environment variables passed to the container
+            - name: API_HOST
+              value: sensor-api.sensor-app.svc.cluster.local
+              # This is the DNS hostname of the API Service inside Kubernetes.
+              # Format: <service-name>.<namespace>.svc.cluster.local
+              # Here it points to your sensor-api Service in the sensor-app namespace
+

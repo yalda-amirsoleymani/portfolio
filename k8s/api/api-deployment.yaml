@@ -1,0 +1,42 @@
+# k8s/api-deployment.yaml
+apiVersion: apps/v1              # Tells Kubernetes which API version of the Deployment resource to use
+kind: Deployment                 # This object is a Deployment (manages Pods & ensures they keep running)
+metadata:
+  name: sensor-api                # Name of this Deployment (used when running kubectl commands)
+  namespace: sensor-app           # Namespace (like a folder) where this Deployment lives
+spec:                             # The "recipe" for how Kubernetes should run it
+  replicas: 1                     # Run 1 copy (Pod) of this application
+  selector:                       # How the Deployment knows which Pods it controls
+    matchLabels:
+      app: sensor-api              # Select Pods that have the label app=sensor-api
+  template:                       # The Pod "blueprint" — every Pod will look like this
+    metadata:
+      labels:
+        app: sensor-api            # Each Pod will have this label (must match selector above)
+    spec:                          # Details for the Pod's containers
+      containers:
+        - name: sensor-api         # Name of the container (inside the Pod)
+          image: portfolio-api:latest  # Container image to run
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000  # The port your app listens on inside the container
+          env:                     # Environment variables passed to the container
+            - name: POSTGRES_HOST
+              value: postgres.sensor-app.svc.cluster.local
+              # The DNS name for the Postgres service inside Kubernetes (namespace-aware)
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:      # Pull value from a Kubernetes Secret
+                  name: postgres-secret   # Secret name
+                  key: POSTGRES_USER      # Key inside the Secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret   # Same Secret as above
+                  key: POSTGRES_PASSWORD  # Key for the password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret   # Same Secret as above
+                  key: POSTGRES_DB        # Key for the database name
+
